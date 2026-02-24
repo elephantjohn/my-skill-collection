@@ -111,6 +111,12 @@ openclaw agents list --bindings
   - 删除 `workspaces/<project>` 前必须二次确认
 - 任何失败先保留现场并汇报，不自动“清空重来”
 
+## 常见坑
+
+- `bindings.match` 必须使用 `accountId`
+- Telegram 多账户模式必须配置 `channels.telegram.accounts`
+- 单一 `botToken` + 多条 `bindings` 会导致同一消息被多次处理（重复回复）
+
 ## 常见失败处理
 
 - `Telegram account already exists`：更换 `project_name` 或先清理旧配置
