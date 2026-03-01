@@ -342,24 +342,27 @@ class WechatEmotionalWriter:
         emotion = random.choice(self.emotion_words.get(category, ["感动"]))
         scene = random.choice(self.scene_words.get("离别", ["车站"]))
         
-        # 填充
-        title = template.format(
-            topic=topic,
-            emotion=emotion,
-            insight="那一刻我才明白",
-            object="行李箱",
-            place=scene,
-            action="转身",
-            description="藏着说不出的不舍",
-            time1="7 天",
-            time2="358 天",
-            number="2.9 亿",
-            consequence="再也见不到了",
-            wrong="长大是自由",
-            right="长大是责任",
-        )
-        
-        return title
+        try:
+            # 填充
+            title = template.format(
+                topic=topic,
+                emotion=emotion,
+                insight="那一刻我才明白",
+                object="行李箱",
+                place=scene,
+                action="转身",
+                description="藏着说不出的不舍",
+                time1="7 天",
+                time2="358 天",
+                number="2.9 亿",
+                consequence="再也见不到了",
+                wrong="长大是自由",
+                right="长大是责任",
+            )
+            return title
+        except KeyError as e:
+            logger.warning(f"模板填充失败：{e}")
+            return f"{topic}：{emotion}的故事"
     
     def _fill_quote_template(
         self,
