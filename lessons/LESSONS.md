@@ -15,6 +15,19 @@
 - [5. 图片生成](#5-图片生成)
 - [6. 语音识别（STT）](#6-语音识别stt)
 - [7. 工作流与部署](#7-工作流与部署)
+- [8. 模型配置](#8-模型配置)
+
+---
+
+## 8. 模型配置
+
+### 8.1 thinking 模式不能通过配置文件开启
+
+- **日期**：2026-03-01
+- **场景**：在 `openclaw.json` 的 `agents.defaults.model` 下添加 `"thinking": true`
+- **错误**：OpenClaw 报 `Unrecognized key: "thinking"`
+- **原因**：OpenClaw 2026.2.6-3 的 config schema 不支持 thinking 作为持久配置项
+- **正确做法**：thinking 只能在对话中临时开启，发 `/thinking` 命令
 
 ---
 
