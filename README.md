@@ -1,24 +1,70 @@
-# My OpenClaw Skill Collection
+# My Skill Collection
 
-OpenClaw 自定义技能集合。
+个人技能集合 - 统一管理、版本控制、按需同步
 
-## Skills
+## 目录结构
 
-| Skill | Description |
-|-------|-------------|
-| [elevenlabs](./elevenlabs/) | ElevenLabs AI 语音全功能工具集 — TTS、STT、语音克隆、变声、音乐生成、配音翻译等 16 项功能 |
-| [qingyun-proxy-setup](./qingyun-proxy-setup/) | 青云中转站一键配置 — 支持 Claude、Gemini、GPT/Codex 三模型接入 |
-| [grant-writer](./grant-writer/) | 国资/政府项目申报书智能生成 — 资料筛选、分段写作、交叉审核、去AI味、自动评分 |
-| [create-project-bot](./create-project-bot/) | 项目 Bot 自动创建器 — 挂在主 Bot（盘古）上，自动生成 SOUL.md/AGENTS.md 并调用 add-project.py 完成账号、Agent、路由与部署 |
-
-## Installation
-
-In OpenClaw, install a skill by pointing to this repo:
-
-```bash
-openclaw skill install <skill-name>
+```
+my-skill-collection/
+├── image-generator/          # JS 版本
+├── image-generator-python/   # Python 版本
+└── .git/                     # Git 版本控制
 ```
 
-## License
+## 使用方式
 
-MIT
+### 1. 添加到项目（软连接方式）
+
+```bash
+# 软连接到 OpenClaw workspace
+ln -s /home/ubuntu/my-skill-collection/image-generator \
+      /home/ubuntu/.openclaw/workspace-xiang_xiaohongshu/skills/image-generator
+```
+
+### 2. 添加到项目（拷贝方式）
+
+```bash
+# 使用同步脚本
+./sync.sh image-generator /home/ubuntu/.openclaw/workspace-xiang_xiaohongshu/skills/
+```
+
+### 3. Git 提交更新
+
+```bash
+cd /home/ubuntu/my-skill-collection
+git add .
+git commit -m "feat: add image-generator skill"
+git push origin main
+```
+
+## 同步脚本
+
+```bash
+# 查看所有技能
+./sync.sh list
+
+# 同步到项目
+./sync.sh image-generator /path/to/project/skills/
+
+# 从项目拉取更新
+./sync.sh image-generator /path/to/project/skills/ --pull
+```
+
+## 技能列表
+
+| 技能 | 语言 | 说明 |
+|------|------|------|
+| image-generator | JS + Python | 通用图片生成（智能选择 API） |
+
+## 添加新技能
+
+1. 在 `my-skill-collection/` 创建技能文件夹
+2. 开发测试完成后提交 git
+3. 需要同步时使用 `sync.sh` 脚本
+
+## 注意事项
+
+- ✅ 所有技能统一版本控制
+- ✅ 支持多项目共享
+- ✅ 软连接适合开发（实时同步）
+- ✅ 拷贝适合生产（独立版本）

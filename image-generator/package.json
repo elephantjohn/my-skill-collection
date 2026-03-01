@@ -1,0 +1,12 @@
+{
+  "name": "image-generator-skill",
+  "version": "1.0.0",
+  "description": "通用图片生成技能 - 智能选择最优 API",
+  "main": "src/generator.js",
+  "scripts": {
+    "test": "node examples.js"
+  },
+  "keywords": ["image", "generation", "ai", "imagen", "seadream"],
+  "author": "",
+  "license": "MIT"
+}

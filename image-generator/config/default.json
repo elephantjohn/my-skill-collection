@@ -1,0 +1,35 @@
+{
+  "defaultApi": "auto",
+  "budgetMode": "medium",
+  "maxDailyCost": 10.0,
+  "scenarios": {
+    "cover": {
+      "priority": "quality",
+      "minResolution": "2K"
+    },
+    "product": {
+      "priority": "accuracy",
+      "textRendering": true
+    },
+    "illustration": {
+      "priority": "artistic"
+    },
+    "text": {
+      "priority": "text_accuracy",
+      "textRendering": true
+    },
+    "general": {
+      "priority": "balance"
+    }
+  },
+  "providers": {
+    "imagen": {
+      "enabled": true,
+      "versions": ["4-fast", "4", "4-ultra"]
+    },
+    "seadream": {
+      "enabled": true,
+      "versions": ["v1", "v2"]
+    }
+  }
+}
