@@ -43,8 +43,8 @@ class GeminiImageGenerator:
         if not self.api_key:
             raise ValueError("需要设置 GEMINI3PRO_API_KEY 环境变量")
         
-        # 初始化客户端
-        self.client = genai.Client()
+        # 初始化客户端（必须传入 api_key）
+        self.client = genai.Client(api_key=self.api_key)
         
         # 设置日志目录
         self.logs_dir = Path("logs/gemini_image")
