@@ -99,7 +99,7 @@ class GeminiImageGenerator:
                         if not save_path.lower().endswith('.png'):
                             save_path = save_path.rsplit('.', 1)[0] + '.png'
                         
-                        image.save(save_path, 'PNG')
+                        image.save(save_path)  # PIL 自动根据扩展名判断格式
                         logger.info(f"✅ 图片已保存：{save_path}")
                         
                         return save_path

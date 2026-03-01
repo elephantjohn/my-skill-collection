@@ -37,7 +37,22 @@ class GeminiTextGenerator:
         Args:
             api_key: Gemini API 密钥，如果不提供则从环境变量读取
         """
+        # 尝试从环境变量获取
         self.api_key = api_key or os.getenv('GEMINI3PRO_API_KEY')
+        
+        # 如果还没有，尝试手动加载 workspace 根目录的.env
+        if not self.api_key:
+            env_file = Path(__file__).parent.parent.parent / '.env'
+            if env_file.exists():
+                with open(env_file, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith('#') and '=' in line:
+                            key, value = line.split('=', 1)
+                            if key.strip() == 'GEMINI3PRO_API_KEY':
+                                self.api_key = value.strip().strip('"').strip("'")
+                                break
+        
         if not self.api_key:
             raise ValueError("需要设置 GEMINI3PRO_API_KEY 环境变量")
         
