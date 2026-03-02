@@ -44,9 +44,9 @@ class SegmentedCensorManager:
         self.logs_dir = logs_dir or Path("logs/censor")
         self.logs_dir.mkdir(parents=True, exist_ok=True)
         
-        # 百度 API 端点
+        # 百度 API 端点（官方文档：https://cloud.baidu.com/doc/ANTIPORN/s/Rk3h6xb3i）
         self.token_url = "https://aip.baidubce.com/oauth/2.0/token"
-        self.censor_url = "https://aip.baidubce.com/rest/2.0/solution/v1/text_censor/v2/user_defined"
+        self.censor_url = "https://aip.baidubce.com/rest/2.0/solution/v1/content_censor/v2/user_defined"
         self.chat_url = "https://qianfan.baidubce.com/v2/chat/completions"
         
         self._access_token = None

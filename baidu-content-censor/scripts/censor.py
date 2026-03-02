@@ -40,7 +40,8 @@ import requests
 
 class BaiduTextCensor:
     TOKEN_URL = "https://aip.baidubce.com/oauth/2.0/token"
-    CENSOR_URL = "https://aip.baidubce.com/rest/2.0/solution/v1/text_censor/v2/user_defined"
+    # 百度内容审核平台 API 端点（官方文档：https://cloud.baidu.com/doc/ANTIPORN/s/Rk3h6xb3i）
+    CENSOR_URL = "https://aip.baidubce.com/rest/2.0/solution/v1/content_censor/v2/user_defined"
 
     def __init__(self, api_key: str, secret_key: str):
         self.api_key = api_key

@@ -2,7 +2,7 @@
 name: baidu-content-censor
 description: >
   百度文本内容审核 + 自动修正 skill。
-  调用百度文本审核 API（user_defined 策略）对中文文本做合规检查，
+  调用百度内容审核平台 API（user_defined 策略）对中文文本做合规检查，
   若不合规则自动调用 ernie-4.5-turbo-128k 做最小化改写，最多循环指定次数直至合规。
   适用于：小说内容审核、用户生成内容（UGC）过滤、任何需要合规自动修正的文本处理场景。
   触发条件：用户要求"审核文本"、"内容合规检查"、"百度文字审核"、"自动修正违规内容"。
@@ -10,13 +10,29 @@ description: >
 
 # 百度内容审核 + 自动修正
 
+## 官方文档
+
+- **产品名称**: 百度内容审核平台
+- **文档地址**: https://cloud.baidu.com/doc/ANTIPORN/s/Rk3h6xb3i
+- **API 端点**: https://aip.baidubce.com/rest/2.0/solution/v1/content_censor/v2/user_defined
+- **需要充值**: 是（百度智能云账户需要充值才能使用）
+
 ## 环境变量
 
 | 变量 | 必填 | 说明 |
 |------|------|------|
-| `TEXT_API_KEY` | 是 | 百度文本审核 API Key |
-| `TEXT_SECRET_KEY` | 是 | 百度文本审核 Secret Key |
+| `TEXT_API_KEY` | 是 | 百度内容审核 API Key（从应用管理获取） |
+| `TEXT_SECRET_KEY` | 是 | 百度内容审核 Secret Key（从应用管理获取） |
 | `BAIDU_API_KEY` | 仅 --fix 时必填 | 千帆 API Key / Bearer Token（用于 ernie-4.5-turbo-128k 修正） |
+
+## 获取 API Key 步骤
+
+1. 登录百度智能云：https://cloud.baidu.com
+2. 进入内容审核平台：https://console.bce.baidu.com/contentreview/
+3. 点击"应用管理"或右上角应用名称
+4. 创建新应用或查看现有应用
+5. 复制 `API Key` 和 `Secret Key`
+6. **重要**: 账户需要充值才能使用 API
 
 ## 脚本使用
 
