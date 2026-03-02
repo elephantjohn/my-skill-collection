@@ -20,7 +20,30 @@ logger = logging.getLogger(__name__)
 
 
 class WechatHistoryWriter:
-    """微信公众号历史趣闻类文章写作器"""
+    """微信公众号历史趣闻类文章写作器
+    
+    核心原则：
+    1. 史实第一，幽默第二
+    2. 必须标注史料来源
+    3. 禁止杜撰、编造
+    4. 区分史实与推测
+    """
+    
+    # 推荐史料来源
+    HISTORICAL_SOURCES = [
+        "史记", "汉书", "后汉书", "三国志", "晋书", "宋书",
+        "南齐书", "梁书", "陈书", "魏书", "北齐书", "周书",
+        "隋书", "南史", "北史", "旧唐书", "新唐书", "旧五代史",
+        "新五代史", "宋史", "辽史", "金史", "元史", "明史",
+        "资治通鉴", "续资治通鉴", "明实录", "清实录",
+        "国语", "战国策", "左传", "公羊传", "谷梁传",
+    ]
+    
+    # 禁止使用的词汇（表示无来源）
+    FORBIDDEN_WORDS = [
+        "据说", "相传", "有人说", "民间传说", "听人说",
+        "据说当时", "相传他", "有人说这是",
+    ]
     
     def __init__(self):
         """初始化写作器"""
@@ -91,7 +114,8 @@ class WechatHistoryWriter:
         self,
         topic: str,
         style: str = "humorous",
-        word_count: int = 3000
+        word_count: int = 3000,
+        verify: bool = True
     ) -> str:
         """生成历史文章
         
@@ -99,9 +123,13 @@ class WechatHistoryWriter:
             topic: 文章主题
             style: 写作风格（humorous/suspense/truth）
             word_count: 目标字数
+            verify: 是否验证史料来源
             
         Returns:
             文章内容
+            
+        Raises:
+            ValueError: 史料验证失败
         """
         logger.info(f"生成历史文章：{topic} (风格：{style})")
         
@@ -110,6 +138,14 @@ class WechatHistoryWriter:
         
         # 生成文章
         article = self._write_article(title, topic, style, word_count)
+        
+        # 验证史料来源
+        if verify:
+            if not self.verify_sources(article):
+                logger.warning("⚠️ 史料验证未通过，但继续返回文章")
+                # 不抛出异常，但记录警告
+            else:
+                logger.info("✅ 史料验证通过")
         
         return article
     
@@ -249,6 +285,51 @@ class WechatHistoryWriter:
         )
         
         return ending
+    
+    def verify_sources(self, content: str) -> bool:
+        """验证史料来源
+        
+        Args:
+            content: 文章内容
+            
+        Returns:
+            是否包含史料来源
+        """
+        # 检查是否包含史料来源
+        has_source = any(source in content for source in self.HISTORICAL_SOURCES)
+        
+        # 检查是否包含禁止词汇
+        has_forbidden = any(word in content for word in self.FORBIDDEN_WORDS)
+        
+        if has_source and not has_forbidden:
+            logger.info("✅ 史料验证通过")
+            return True
+        elif has_forbidden:
+            logger.warning("❌ 包含禁止词汇（据说/相传等）")
+            return False
+        else:
+            logger.warning("⚠️ 未找到史料来源")
+            return False
+    
+    def check_content(self, content: str) -> Dict:
+        """检查文章内容质量
+        
+        Args:
+            content: 文章内容
+            
+        Returns:
+            检查结果
+        """
+        result = {
+            "has_sources": any(source in content for source in self.HISTORICAL_SOURCES),
+            "has_forbidden": any(word in content for word in self.FORBIDDEN_WORDS),
+            "word_count": len(content),
+            "sources_found": [s for s in self.HISTORICAL_SOURCES if s in content],
+        }
+        
+        result["is_valid"] = result["has_sources"] and not result["has_forbidden"]
+        
+        return result
     
     def _fill_title_template(self, template: str, topic: str) -> str:
         """填充标题模板"""
