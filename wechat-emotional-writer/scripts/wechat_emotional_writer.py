@@ -164,25 +164,34 @@ class WechatEmotionalWriter:
             topic: 主题
             count: 生成数量
             category: 类别
-            style: 风格（情绪化/场景化/数字对比/悬念式）
+            style: 风格（情绪化/场景化/数字对比/悬念式/历史趣闻）
             
         Returns:
             标题列表
         """
-        logger.info(f"生成{count}个标题：{topic}")
+        logger.info(f"生成{count}个标题：{topic} (类别：{category})")
         
         titles = []
         
-        # 如果指定了风格
-        if style:
+        # 历史趣闻类别特殊处理
+        if category == "历史趣闻":
+            templates = self.title_templates.get("历史趣闻", [])
+            for template in templates:
+                title = self._fill_template(template, topic, category)
+                if title:
+                    titles.append(title)
+        elif style:
+            # 指定风格
             templates = self.title_templates.get(style, [])
             for template in templates:
                 title = self._fill_template(template, topic, category)
                 if title:
                     titles.append(title)
         else:
-            # 混合所有风格
+            # 混合所有风格（排除历史趣闻）
             for style_name, templates in self.title_templates.items():
+                if style_name == "历史趣闻":
+                    continue
                 for template in templates:
                     title = self._fill_template(template, topic, category)
                     if title:
