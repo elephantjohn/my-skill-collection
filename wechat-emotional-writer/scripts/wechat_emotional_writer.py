@@ -51,6 +51,16 @@ class WechatEmotionalWriter:
                 "为什么{topic}？{insight}",
                 "{topic}的人，后来都{consequence}",
             ],
+            "历史趣闻": [
+                "{topic}：被{misunderstand}千年的{truth}",
+                "{topic}的另一面：{surprise}",
+                "历史上的{topic}：{detail}",
+                "{topic}的真实生活：{contrast}",
+                "如果{topic}有{modern}：{funny}",
+                "{topic}：{fact}，{unexpected}",
+                "你不知道的{topic}：{secret}",
+                "{topic}的{daily}：比{modern}还{adjective}",
+            ],
         }
         
         # 情感词汇库
@@ -348,25 +358,46 @@ class WechatEmotionalWriter:
         scene = random.choice(self.scene_words.get("离别", ["车站"]))
         
         try:
-            # 填充
-            title = template.format(
-                topic=topic,
-                emotion=emotion,
-                insight="那一刻我才明白",
-                object="行李箱",
-                place=scene,
-                action="转身",
-                description="藏着说不出的不舍",
-                time1="7 天",
-                time2="358 天",
-                number="2.9 亿",
-                consequence="再也见不到了",
-                wrong="长大是自由",
-                right="长大是责任",
-            )
+            # 历史趣闻类别特殊处理
+            if category == "历史趣闻":
+                title = template.format(
+                    topic=topic,
+                    misunderstand="误解",
+                    truth="真相",
+                    surprise="让你意想不到的故事",
+                    detail="鲜为人知的细节",
+                    contrast="和你想的不一样",
+                    modern="朋友圈",
+                    funny="会这样发",
+                    fact="其实是个暖男",
+                    unexpected="颠覆你的认知",
+                    secret="藏在史书里的秘密",
+                    daily="日常",
+                    modern2="现代人",
+                    adjective="会玩",
+                )
+            else:
+                # 其他类别
+                title = template.format(
+                    topic=topic,
+                    emotion=emotion,
+                    insight="那一刻我才明白",
+                    object="行李箱",
+                    place=scene,
+                    action="转身",
+                    description="藏着说不出的不舍",
+                    time1="7 天",
+                    time2="358 天",
+                    number="2.9 亿",
+                    consequence="再也见不到了",
+                    wrong="长大是自由",
+                    right="长大是责任",
+                )
             return title
         except KeyError as e:
             logger.warning(f"模板填充失败：{e}")
+            if category == "历史趣闻":
+                return f"{topic}：被误解的历史真相"
             return f"{topic}：{emotion}的故事"
     
     def _fill_quote_template(
