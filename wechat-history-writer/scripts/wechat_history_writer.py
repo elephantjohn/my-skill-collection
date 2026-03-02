@@ -253,9 +253,14 @@ class WechatHistoryWriter:
     def _fill_title_template(self, template: str, topic: str) -> str:
         """填充标题模板"""
         
+        # 清理 topic，避免重复
+        clean_topic = topic.replace("的真实面貌", "").replace("的真实生活", "").strip()
+        if not clean_topic:
+            clean_topic = topic
+        
         try:
             title = template.format(
-                topic=topic,
+                topic=clean_topic,
                 surprise="另有隐情",
                 adjective="有争议",
                 truth="这样",
