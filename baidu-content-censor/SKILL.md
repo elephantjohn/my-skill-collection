@@ -96,3 +96,77 @@ is_ok, violations = mgr.censor_once(text, item_id=0)
 将 `scripts/censor.py` 复制到目标项目，按需导入 `CensorManager`。
 类包含：`BaiduTextCensor`（审核）、`BaiduErnieClient`（修正）、`CensorManager`（主控）。
 所有类均可独立使用，无循环依赖。
+
+---
+
+# 🤖 SmartCensor 智能分段审核（进阶版）
+
+**适用于**：长文本、多次生成内容的自动化审核流程
+
+**触发条件**：用户要求"智能审核"、"分段审核"、"自动修正"、"最少次数定位问题"
+
+## 核心功能
+
+1. **分段检测**：将长文本按段落分割（每段约500字）
+2. **问题定位**：逐段送审，找出违规段落
+3. **上下文修正**：用 Gemini 重写问题时保留上下文
+4. **最少次数算法**：避免每次都重审全文
+
+## 环境变量
+
+| 变量 | 必填 | 说明 |
+|------|------|------|
+| `TEXT_API_KEY` | 是 | 百度内容审核 API Key |
+| `TEXT_SECRET_KEY` | 是 | 百度内容审核 Secret Key |
+| `GEMINI3PRO_API_KEY` | 仅自动修正时需要 | Gemini API Key（用于重写问题段落） |
+
+## 使用方法
+
+### 命令行
+
+```bash
+# 仅审核
+python scripts/smart_censor.py "待审核文本"
+
+# 审核 + 自动修正（推荐）
+python scripts/smart_censor.py "待审核文本" --fix
+```
+
+### 编程接口
+
+```python
+from scripts.smart_censor import SmartCensor
+
+censor = SmartCensor(
+    api_key="你的TEXT_API_KEY",
+    secret_key="你的TEXT_SECRET_KEY"
+)
+
+# 审核 + 自动修正
+is_pass, final_text, call_count = censor.censor_and_fix(
+    text=长文本,
+    max_retries=3
+)
+
+print(f"审核结果: {'通过' if is_pass else '未通过'}")
+print(f"调用次数: {call_count}")  # 最少次数定位问题
+print(f"最终文本: {final_text}")
+```
+
+## 算法流程
+
+```
+1. 全文送审 → 通过? 结束
+2. 分段检测 → 找出所有问题段落索引
+3. 保留上下文（前后各一段）
+4. 用 Gemini 重写问题段落
+5. 重新送审全文
+6. 重复直到通过或达最大重试次数
+```
+
+## 使用场景
+
+- ✅ 自动发布内容前的内容审核
+- ✅ 长篇小说/连载的分段审核
+- ✅ 用户生成内容（UGC）的批量审核
+- ✅ 需要自动修正违规内容的流程

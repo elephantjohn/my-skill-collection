@@ -41,7 +41,7 @@ import requests
 class BaiduTextCensor:
     TOKEN_URL = "https://aip.baidubce.com/oauth/2.0/token"
     # 百度内容审核平台 API 端点（官方文档：https://cloud.baidu.com/doc/ANTIPORN/s/Rk3h6xb3i）
-    CENSOR_URL = "https://aip.baidubce.com/rest/2.0/solution/v1/content_censor/v2/user_defined"
+    CENSOR_URL = "https://aip.baidubce.com/rest/2.0/solution/v1/text_censor/v2/user_defined"
 
     def __init__(self, api_key: str, secret_key: str):
         self.api_key = api_key
@@ -50,6 +50,14 @@ class BaiduTextCensor:
         self._token_expiry: float = 0.0
 
     def _get_access_token(self) -> str:
+        # 使用 BAIDU_API_KEY 作为 Bearer Token（千帆认证方式）
+        # 如果 api_key 已经是 bce-v3/ 格式，直接返回作为 token
+        if self.api_key and self.api_key.startswith("bce-v3/"):
+            self._access_token = self.api_key
+            self._token_expiry = time.time() + 86400  # 24 小时过期
+            return self._access_token
+        
+        # 否则使用传统的 client_credentials 方式
         if self._access_token and time.time() < (self._token_expiry - 60):
             return self._access_token
         resp = requests.post(
@@ -64,20 +72,38 @@ class BaiduTextCensor:
         resp.raise_for_status()
         data = resp.json()
         if "access_token" not in data:
-            raise RuntimeError(f"获取token失败: {data}")
+            raise RuntimeError(f"获取 token 失败：{data}")
         self._access_token = data["access_token"]
         self._token_expiry = time.time() + data.get("expires_in", 2592000)
         return self._access_token
 
+
     def censor_text(self, text: str) -> Dict:
         """调用百度文本审核 API，返回原始响应 dict。"""
         token = self._get_access_token()
-        resp = requests.post(
-            self.CENSOR_URL,
-            params={"access_token": token},
-            data={"text": text},
-            timeout=30,
-        )
+        
+        # 判断使用哪种认证方式
+        if token.startswith("bce-v3/"):
+            # 使用 Bearer Token 认证（千帆方式）
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': f'Bearer {token}'
+            }
+            resp = requests.post(
+                self.CENSOR_URL,
+                headers=headers,
+                data=f"text={text}",
+                timeout=30,
+            )
+        else:
+            # 使用 access_token 参数认证（传统方式）
+            resp = requests.post(
+                self.CENSOR_URL,
+                params={"access_token": token},
+                data={"text": text},
+                timeout=30,
+            )
+        
         resp.raise_for_status()
         return resp.json()
 
